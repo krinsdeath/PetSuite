@@ -4,9 +4,13 @@ import net.krinsoft.petsuite.PetCore;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author krinsdeath
@@ -41,11 +45,13 @@ public class Database {
 
     private Connection connection;
 
+    private Map<String, PreparedStatement> prepared = new HashMap<String, PreparedStatement>();
+
     public Database(PetCore instance) {
         this.plugin     = instance;
 
         try {
-            type = Type.forName(plugin.getConfig().getString("database.type"));
+            type = Type.forName(plugin.getConfig().getString("database.type", "SQLite"));
         } catch (TypeNotPresentException e) {
             e.printStackTrace();
             plugin.debug("Defaulting to SQLite...");
@@ -58,6 +64,15 @@ public class Database {
         }
     }
 
+    public void save() {
+        try {
+            if (connect()) {
+                connection.commit();
+            }
+        } catch (SQLException e) {
+        }
+    }
+
     public boolean connect() {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -67,8 +82,14 @@ public class Database {
             if (!plugin.getDataFolder().exists()) {
                 plugin.getDataFolder().mkdirs();
             }
+            Properties properties = new Properties();
+            if (type.equals(Type.MySQL)) {
+                properties.put("user", plugin.getConfig().getString("database.user", "root"));
+                properties.put("password", plugin.getConfig().getString("database.password", "root"));
+            }
             String connURL = "jdbc:" + type.name().toLowerCase() + ":" + getDatabasePath();
-            Connection connection = DriverManager.getConnection(connURL);
+            connection = DriverManager.getConnection(connURL, properties);
+            connection.setAutoCommit(false);
             return true;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -100,25 +121,36 @@ public class Database {
     private void buildDatabase() {
         try {
             String createBase = "CREATE TABLE IF NOT EXISTS petsuite_base (" +
-                    "id INTEGER UNIQUE AUTO_INCREMENT, " +
+                    "id INTEGER AUTO_INCREMENT, " +
                     "pet_uuid TEXT UNIQUE NOT NULL, " +
-                    "owner TEXT PRIMARY KEY, " +
+                    "owner TEXT, " +
                     "name TEXT, " +
-                    "level INTEGER" +
-                    ");";
-            String createSkill = "CREATE TABLE IF NOT EXISTS petsuite_skills (" +
-                    "pet_id INTEGER, " +
-                    "skill INTEGER, " +
                     "level INTEGER, " +
-                    "FOREIGN KEY (pet_id) REFERENCES petsuite_base(id)" +
+                    "kills INTEGER, " +
+                    "PRIMARY KEY (id, owner)" +
                     ");";
             Statement state = connection.createStatement();
             state.executeUpdate(createBase);
-            state.executeUpdate(createSkill);
             state.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public PreparedStatement prepare(String query) {
+        if (connect()) {
+            if (prepared.containsKey(query)) {
+                return prepared.get(query);
+            } else {
+                try {
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    prepared.put(query, statement);
+                    return statement;
+                } catch (SQLException e) {
+                }
+            }
+        }
+        return null;
     }
 
 }
