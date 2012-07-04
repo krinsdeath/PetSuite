@@ -3,8 +3,10 @@ package net.krinsoft.petsuite;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Wolf;
 
 import java.util.UUID;
 
@@ -77,6 +79,20 @@ public class Pet {
     }
 
     /**
+     * Gets a colored string based on what type of pet this is.
+     * @return The colored pet name.
+     */
+    public String getColoredName() {
+        if (reference instanceof Wolf) {
+            return ChatColor.GRAY + name + ChatColor.WHITE;
+        } else if (reference instanceof Ocelot) {
+            return ChatColor.GOLD + name + ChatColor.WHITE;
+        } else {
+            return name;
+        }
+    }
+
+    /**
      * Gets this pet's level, based on kills. The pet's level determines which skills they have access to.
      * @return The pet's level.
      */
@@ -97,14 +113,25 @@ public class Pet {
      */
     public void addKill() {
         kills++;
-        if (plugin.getConfig().getBoolean("plugin.notify_on_kill", false)) {
-            Player player = plugin.getServer().getPlayer(owner);
-            if (player != null) {
-                String message = ChatColor.GREEN + "[Pet] " + ChatColor.AQUA + name + ChatColor.WHITE + " just killed something.";
+        Player player = plugin.getServer().getPlayer(owner);
+        if (player != null) {
+            if (plugin.getConfig().getBoolean("plugin.notify_on_kill", false)) {
+                String message = ChatColor.GREEN + "[Pet] " + getColoredName() + " just killed something.";
                 if (player.getListeningPluginChannels().contains("SimpleNotice")) {
                     player.sendPluginMessage(plugin, "SimpleNotice", message.getBytes(java.nio.charset.Charset.forName("UTF-8")));
                 } else {
                     player.sendMessage(message);
+                }
+            }
+            if (plugin.getPetManager().nextLevel(level, kills)) {
+                level++;
+                if (plugin.getConfig().getBoolean("plugin.notify_on_level", true)) {
+                    String message = ChatColor.GREEN + "[Pet] " + getColoredName() + " has leveled up to " + level + "!";
+                    if (player.getListeningPluginChannels().contains("SimpleNotice")) {
+                        player.sendPluginMessage(plugin, "SimpleNotice", message.getBytes(java.nio.charset.Charset.forName("UTF-8")));
+                    } else {
+                        player.sendMessage(message);
+                    }
                 }
             }
         }

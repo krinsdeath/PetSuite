@@ -2,10 +2,12 @@ package net.krinsoft.petsuite.commands;
 
 import net.krinsoft.petsuite.Pet;
 import net.krinsoft.petsuite.PetCore;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author krinsdeath
@@ -24,9 +26,15 @@ public class PetInfoCommand extends PetSuiteCommand {
 
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
-        Pet pet = plugin.getPetManager().matchPet(args.get(0));
-        if (pet != null) {
-            plugin.showInfo(sender, pet);
+        Set<Pet> pets = plugin.getPetManager().matchPet(args.get(0));
+        if (pets.size() > 0) {
+            for (Pet pet : pets) {
+                if (pet.getOwner().equals(sender.getName()) || sender.hasPermission("petsuite.admin.info")) {
+                    plugin.showInfo(sender, pet);
+                    return;
+                }
+            }
         }
+        sender.sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "No matching pets (or insufficient access).");
     }
 }

@@ -20,6 +20,10 @@
             <url>http://repo.bukkit.org/content/groups/public</url>
         </repository>
         <repository>
+            <id>onarandombox</id>
+            <url>http://repo.onarandombox.com/content/groups/public</url>
+        </repository>
+        <repository>
             <id>krinsoft</id>
             <url>http://files.krinsoft.net:8085/nexus/content/groups/public</url>
         </repository>

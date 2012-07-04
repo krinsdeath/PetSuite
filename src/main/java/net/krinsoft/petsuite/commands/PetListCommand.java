@@ -35,7 +35,7 @@ public class PetListCommand extends PetSuiteCommand {
         if (pets.size() > 0) {
             sender.sendMessage(ChatColor.GREEN + "=== " + ChatColor.AQUA + "Pet List" + ChatColor.GREEN + " ===");
             for (Pet pet : pets) {
-                sender.sendMessage(ChatColor.GREEN + pet.getName() + ChatColor.WHITE + " (Owned by " + ChatColor.AQUA + pet.getOwner() + ChatColor.WHITE + ") - " + pet.getUniqueId().toString().substring(0, 10) + "...");
+                sender.sendMessage(ChatColor.GREEN + pet.getColoredName() + " (Owned by " + ChatColor.AQUA + pet.getOwner() + ChatColor.WHITE + ") - " + pet.getUniqueId().toString().substring(0, 10) + "...");
             }
         } else {
             sender.sendMessage("No pets found.");

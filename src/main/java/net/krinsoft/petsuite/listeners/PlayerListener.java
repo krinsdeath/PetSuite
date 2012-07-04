@@ -8,6 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author krinsdeath
  */
@@ -15,8 +18,14 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 public class PlayerListener implements Listener {
     private PetCore plugin;
 
+    private Map<InfoCooldown, Long> cooldowns = new HashMap<InfoCooldown, Long>();
+
     public PlayerListener(PetCore instance) {
         plugin = instance;
+    }
+
+    public void clean() {
+        cooldowns.clear();
     }
 
     @EventHandler
@@ -26,7 +35,8 @@ public class PlayerListener implements Listener {
             if (naming != null) {
                 Pet pet = plugin.getPetManager().getPet(event.getRightClicked());
                 if (pet != null && (pet.getOwner().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("petsuite.admin.name"))) {
-                    String old = pet.setName(naming);
+                    String old = pet.getColoredName();
+                    pet.setName(naming);
                     event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "You have renamed " + ChatColor.GREEN + old + ChatColor.WHITE + " to " + ChatColor.AQUA + naming + ChatColor.WHITE + ".");
                 }
                 event.setCancelled(true);
@@ -35,11 +45,49 @@ public class PlayerListener implements Listener {
             if (((Tameable)event.getRightClicked()).getOwner().equals(event.getPlayer()) || event.getPlayer().hasPermission("petsuite.admin.info")) {
                 Pet pet = plugin.getPetManager().getPet(event.getRightClicked());
                 if (pet != null) {
-                    plugin.showInfo(event.getPlayer(), pet);
+                    InfoCooldown cd = new InfoCooldown(event.getPlayer().getName(), pet.getUniqueId().toString());
+                    Long timeout = cooldowns.get(cd);
+                    if (timeout == null || System.currentTimeMillis() - timeout > 10000) {
+                        plugin.showInfo(event.getPlayer(), pet);
+                        cooldowns.put(cd, System.currentTimeMillis());
+                    }
                 }
-            } else {
             }
         }
     }
 
+
+    private class InfoCooldown {
+        private String owner;
+        private String pet;
+
+        public InfoCooldown(String owner, String pet) {
+            this.owner = owner;
+            this.pet = pet;
+        }
+
+        @Override
+        public String toString() {
+            return "InfoCooldown{owner=" + owner + ",pet=" + pet + "}";
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7 + 13;
+            hash = hash * 7 + this.toString().hashCode();
+            return hash + (pet.hashCode() + owner.hashCode());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (o.getClass() != this.getClass()) {
+                return false;
+            }
+            InfoCooldown that = (InfoCooldown) o;
+            return o.hashCode() == this.hashCode();
+        }
+    }
 }

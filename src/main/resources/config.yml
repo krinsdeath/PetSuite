@@ -1,6 +1,7 @@
 plugin:
   debug: false
   notify_on_kill: false
+  notify_on_level: true
 
 database:
   type: SQLite
@@ -10,10 +11,20 @@ database:
   password: root
   hostname: localhost
   
+levels:
+  '2': 5
+  '3': 25
+  '4': 75
+  '5': 150
+  '6': 200
+  '7': 300
+
 skills:
-  stone_skin:
-    level: 1
-  iron_skin:
-    level: 2
-  diamond_skin:
-    level: 3
+  skins:
+    stone_skin: 3
+    iron_skin: 5
+    diamond_skin: 7
+  fangs:
+    stone_fang: 2
+    iron_fang: 4
+    diamond_fang: 6

@@ -36,7 +36,7 @@ public class PetManager {
         plugin.debug("Saving database...");
         PreparedStatement statement = database.prepare("REPLACE INTO petsuite_base (pet_uuid, owner, name, level, kills) VALUES(?, ?, ?, ?, ?);");
         try {
-            for (Pet pet : pets.values()) {
+            for (Pet pet : new HashSet<Pet>(pets.values())) {
                 plugin.debug("Adding query to update '" + pet.getOwner() + "." + pet.getName() + "'");
                 statement.setString(1, pet.getUniqueId().toString());
                 statement.setString(2, pet.getOwner());
@@ -79,17 +79,18 @@ public class PetManager {
     }
 
     /**
-     * Attempts to match a pet by the given UUID string
-     * @param id The UUID of the pet
-     * @return A first pet matching all or part of the specified UUID, or null
+     * Attempts to match a pet by the given UUID or name
+     * @param id The UUID or name of the pet
+     * @return A first pet matching all or part of the specified UUID or name, or null
      */
-    public Pet matchPet(String id) {
+    public Set<Pet> matchPet(String id) {
+        Set<Pet> temp = new HashSet<Pet>();
         for (Pet pet : pets.values()) {
-            if (pet.getUniqueId().toString().contains(id)) {
-                return pet;
+            if (pet.getUniqueId().toString().contains(id) || pet.getName().equalsIgnoreCase(id)) {
+                temp.add(pet);
             }
         }
-        return null;
+        return temp;
     }
 
     /**
@@ -138,6 +139,19 @@ public class PetManager {
         for (Pet pet : validPets) {
             pets.put(pet.getUniqueId(), pet);
         }
+    }
+
+    /**
+     * Checks whether the specified kill count is enough to level a pet up
+     * @param level The current level of the pet
+     * @param kills The current kill count of the pet
+     * @return true if the pet's kill count is high enough, otherwise false
+     */
+    public boolean nextLevel(int level, int kills) {
+        int next = plugin.getConfig().getInt("levels." + (level+1));
+        plugin.debug("Current (Level " + level + "): " + kills);
+        plugin.debug("Next (Level " + (level+1) + "): " + next);
+        return kills >= next;
     }
 
 }
