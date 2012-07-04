@@ -32,19 +32,18 @@ public class PlayerListener implements Listener {
     void playerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() != null && event.getRightClicked() instanceof Tameable && ((Tameable)event.getRightClicked()).isTamed()) {
             String naming = plugin.getNaming(event.getPlayer().getName());
-            if (naming != null) {
-                Pet pet = plugin.getPetManager().getPet(event.getRightClicked());
-                if (pet != null && (pet.getOwner().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("petsuite.admin.name"))) {
-                    String old = pet.getColoredName();
-                    pet.setName(naming);
-                    event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "You have renamed " + ChatColor.GREEN + old + ChatColor.WHITE + " to " + ChatColor.AQUA + naming + ChatColor.WHITE + ".");
+            Pet pet = plugin.getPetManager().getPet(event.getRightClicked());
+            if (pet != null) {
+                if (naming != null) {
+                    if (pet.getOwner().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("petsuite.admin.name")) {
+                        String old = pet.getColoredName();
+                        pet.setName(naming);
+                        event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "You have renamed " + ChatColor.GREEN + old + ChatColor.WHITE + " to " + ChatColor.AQUA + naming + ChatColor.WHITE + ".");
+                    }
+                    event.setCancelled(true);
+                    return;
                 }
-                event.setCancelled(true);
-                return;
-            }
-            if (((Tameable)event.getRightClicked()).getOwner().equals(event.getPlayer()) || event.getPlayer().hasPermission("petsuite.admin.info")) {
-                Pet pet = plugin.getPetManager().getPet(event.getRightClicked());
-                if (pet != null) {
+                if (((Tameable)event.getRightClicked()).getOwner().equals(event.getPlayer()) || event.getPlayer().hasPermission("petsuite.admin.info")) {
                     InfoCooldown cd = new InfoCooldown(event.getPlayer().getName(), pet.getUniqueId().toString());
                     Long timeout = cooldowns.get(cd);
                     if (timeout == null || System.currentTimeMillis() - timeout > 10000) {
@@ -55,7 +54,6 @@ public class PlayerListener implements Listener {
             }
         }
     }
-
 
     private class InfoCooldown {
         private String owner;
