@@ -1,0 +1,19 @@
+plugin:
+  debug: false
+  notify_on_kill: false
+
+database:
+  type: SQLite
+  port: 3306
+  name: petsuite
+  user: root
+  password: root
+  hostname: localhost
+  
+skills:
+  stone_skin:
+    level: 1
+  iron_skin:
+    level: 2
+  diamond_skin:
+    level: 3

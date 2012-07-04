@@ -1,0 +1,33 @@
+name: PetSuite
+main: net.krinsoft.petsuite.PetCore
+version: maven-version-number
+author: krinsdeath
+load: STARTUP
+
+commands:
+  petsuite:
+    aliases: [pet]
+    description: PetSuite's top-level command.
+    usage: /<command>
+    
+permissions:
+  petsuite.admin.*:
+    description: Allows access to all of PetSuite's administrative features.
+    default: op
+    children:
+      petsuite.admin.info: true
+      petsuite.admin.name: true
+      petsuite.admin.health: true
+      petsuite.admin.transfer: true
+  petsuite.admin.info:
+    description: Allows access to view information about any pet.
+    default: op
+  petsuite.admin.name:
+    description: Allows access to set any pet's name.
+    default: op
+  petsuite.admin.health:
+    description: Allows access to view any pet's health.
+    default: op
+  petsuite.admin.transfer:
+    description: Allows access to transfer any pet's ownership.
+    default: op
