@@ -122,9 +122,9 @@ public class Database {
         try {
             String createBase = "CREATE TABLE IF NOT EXISTS petsuite_base (" +
                     "id INTEGER AUTO_INCREMENT, " +
-                    "pet_uuid TEXT UNIQUE NOT NULL, " +
-                    "owner TEXT, " +
-                    "name TEXT, " +
+                    "pet_uuid VARCHAR(64) UNIQUE NOT NULL, " +
+                    "owner VARCHAR(32), " +
+                    "name VARCHAR(32), " +
                     "level INTEGER, " +
                     "kills INTEGER, " +
                     "PRIMARY KEY (id, owner)" +
