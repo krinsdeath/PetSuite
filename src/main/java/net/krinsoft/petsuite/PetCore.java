@@ -7,6 +7,7 @@ import net.krinsoft.petsuite.commands.PetListCommand;
 import net.krinsoft.petsuite.commands.PetNameCommand;
 import net.krinsoft.petsuite.commands.PetSuiteDebugCommand;
 import net.krinsoft.petsuite.commands.PetSuiteReloadCommand;
+import net.krinsoft.petsuite.commands.PetTransferCommand;
 import net.krinsoft.petsuite.listeners.EntityListener;
 import net.krinsoft.petsuite.listeners.PlayerListener;
 import net.krinsoft.petsuite.skills.PetSkill;
@@ -163,6 +164,7 @@ public class PetCore extends JavaPlugin {
         commands.registerCommand(new PetInfoCommand(this));
         commands.registerCommand(new PetListCommand(this));
         commands.registerCommand(new PetNameCommand(this));
+        commands.registerCommand(new PetTransferCommand(this));
         commands.registerCommand(new PetSuiteReloadCommand(this));
         commands.registerCommand(new PetSuiteDebugCommand(this));
     }
@@ -215,6 +217,7 @@ public class PetCore extends JavaPlugin {
     }
 
     private Map<String, String> naming = new HashMap<String, String>();
+    private Map<String, String> transferring = new HashMap<String, String>();
 
     /**
      * After setting this, the next owned pet the player clicks will be set to the given name.
@@ -223,6 +226,7 @@ public class PetCore extends JavaPlugin {
      */
     public void setNaming(String player, String name) {
         naming.put(player, name);
+        transferring.remove(player);
     }
 
     /**
@@ -232,6 +236,25 @@ public class PetCore extends JavaPlugin {
      */
     public String getNaming(String player) {
         return naming.remove(player);
+    }
+
+    /**
+     * After setting this, the ownership of the next owned pet the player clicks will be transferred to the target
+     * @param player The name of the player initiating the transfer
+     * @param target The target of the ownership transfer
+     */
+    public void setTransferring(String player, String target) {
+        transferring.put(player, target);
+        naming.remove(player);
+    }
+
+    /**
+     * Gets and removes the target of a transfer for the specified player
+     * @param player The name of the player initiating the transfer
+     * @return The target of the ownership transfer
+     */
+    public String getTransferring(String player) {
+        return transferring.remove(player);
     }
 
 }

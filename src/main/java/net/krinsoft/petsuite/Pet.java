@@ -63,19 +63,38 @@ public class Pet {
     }
 
     /**
-     * Gets this pet's owner's name.
-     * @return The pet's owner's name.
-     */
-    public String getOwner() {
-        return owner;
-    }
-
-    /**
      * Gets this pet's name.
      * @return The pet's name.
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Sets this pet's owner
+     * @param player The name of the player
+     * @return true if the owner is set, otherwise false
+     */
+    public boolean setOwner(String player) {
+        try {
+            Player p = plugin.getServer().getPlayer(player);
+            if (p != null) {
+                ((Tameable)reference).setOwner(p);
+                owner = p.getName();
+                return true;
+            }
+        } catch (NullPointerException e) {
+            plugin.getLogger().warning("Attempted to set owner for a pet (" + owner + "." + name + ") without a valid entity reference.");
+        }
+        return false;
+    }
+
+    /**
+     * Gets this pet's owner's name.
+     * @return The pet's owner's name.
+     */
+    public String getOwner() {
+        return owner;
     }
 
     /**

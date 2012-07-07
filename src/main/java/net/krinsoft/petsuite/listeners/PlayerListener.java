@@ -32,8 +32,19 @@ public class PlayerListener implements Listener {
     void playerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() != null && event.getRightClicked() instanceof Tameable && ((Tameable)event.getRightClicked()).isTamed()) {
             String naming = plugin.getNaming(event.getPlayer().getName());
+            String transferring = plugin.getTransferring(event.getPlayer().getName());
             Pet pet = plugin.getPetManager().getPet(event.getRightClicked());
             if (pet != null) {
+                if (transferring != null) {
+                    if (pet.getOwner().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("petsuite.admin.transfer")) {
+                        String old = pet.getOwner();
+                        pet.setOwner(transferring);
+                        event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "You have transferred ownership of " + pet.getColoredName() + " to " + ChatColor.AQUA + pet.getOwner() + ChatColor.WHITE + ".");
+                        plugin.getServer().getPlayer(pet.getOwner()).sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + old + " has transferred ownership of his pet " + pet.getColoredName() + " to you.");
+                    }
+                    event.setCancelled(true);
+                    return;
+                }
                 if (naming != null) {
                     if (pet.getOwner().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("petsuite.admin.name")) {
                         String old = pet.getColoredName();
