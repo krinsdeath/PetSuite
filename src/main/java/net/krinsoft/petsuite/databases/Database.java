@@ -62,6 +62,7 @@ public class Database {
         } else {
             plugin.debug("An error occurred while trying to connect to the database. Check your config.yml.");
         }
+        plugin.debug("Database schema: " + type.name());
     }
 
     public void save() {
