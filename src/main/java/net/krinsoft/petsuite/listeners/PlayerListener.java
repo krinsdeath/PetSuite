@@ -38,9 +38,12 @@ public class PlayerListener implements Listener {
                 if (transferring != null) {
                     if (pet.getOwner().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("petsuite.admin.transfer")) {
                         String old = pet.getOwner();
-                        pet.setOwner(transferring);
-                        event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "You have transferred ownership of " + pet.getColoredName() + " to " + ChatColor.AQUA + pet.getOwner() + ChatColor.WHITE + ".");
-                        plugin.getServer().getPlayer(pet.getOwner()).sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + old + " has transferred ownership of his pet " + pet.getColoredName() + " to you.");
+                        if (pet.setOwner(transferring)) {
+                            event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "You have transferred ownership of " + pet.getColoredName() + " to " + ChatColor.AQUA + pet.getOwner() + ChatColor.WHITE + ".");
+                            plugin.getServer().getPlayer(pet.getOwner()).sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + old + " has transferred ownership of his pet " + pet.getColoredName() + " to you.");
+                        } else {
+                            event.getPlayer().sendMessage(ChatColor.GREEN + "[Pet] " + ChatColor.WHITE + "Pet ownership transfer failed.");
+                        }
                     }
                     event.setCancelled(true);
                     return;
