@@ -131,13 +131,13 @@ public class PetManager {
     }
 
     /**
-     * Clears the currently cached pet list and caches the given set of pets in its place.
-     * @param validPets The new pet list.
+     * Checks the current pet list for possibly stale references and clears them
      */
-    protected void cacheAll(Set<Pet> validPets) {
-        pets.clear();
-        for (Pet pet : validPets) {
-            pets.put(pet.getUniqueId(), pet);
+    protected void cacheAll() {
+        for (UUID id : new HashSet<UUID>(pets.keySet())) {
+            if (!pets.get(id).isValid()) {
+                pets.remove(id);
+            }
         }
     }
 

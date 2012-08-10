@@ -2,6 +2,7 @@ package net.krinsoft.petsuite;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
@@ -179,6 +180,14 @@ public class Pet {
      */
     public UUID getUniqueId() {
         return reference.getUniqueId();
+    }
+
+    /**
+     * Checks whether the entity reference is valid or invalid
+     * @return true if the entity is valid, otherwise false
+     */
+    public boolean isValid() {
+        return reference.isValid();
     }
 
 }

@@ -81,6 +81,7 @@ public class PetCore extends JavaPlugin {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
+                /**
                 Set<Pet> pets = new HashSet<Pet>();
                 for (World world : getServer().getWorlds()) {
                     for (Entity entity : world.getEntities()) {
@@ -93,6 +94,8 @@ public class PetCore extends JavaPlugin {
                     }
                 }
                 petManager.cacheAll(pets);
+                 **/
+                petManager.cacheAll();
             }
 
         }, 1L, 300L * 20L);
